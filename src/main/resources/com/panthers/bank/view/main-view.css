@@ -1,0 +1,15 @@
+.root{
+    -fx-background-color: #212121;
+}
+
+.button{
+    -fx-background-color: #FAFAFA;
+    -fx-text-fill: #212121
+}
+
+#titleText{
+    -fx-font-size: 32px;
+    -fx-font-Family: "Cambria";
+    -fx-text-fill: #EF5350;
+    -fx-text-alignment: CENTER;
+}
