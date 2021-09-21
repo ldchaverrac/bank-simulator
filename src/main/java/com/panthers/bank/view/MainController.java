@@ -11,14 +11,13 @@ import org.controlsfx.control.Notifications;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 public class MainController {
    @FXML private TableView<Client> clientsAttendedTable;
    @FXML private TableView<Client> clientsWaitingTable;
    private final BankAttentionQueue bankQueue = new BankAttentionQueue();
-   
+
    private final Consumer<List<Client>> updateTables = (clients) -> {
       clientsWaitingTable.setItems(FXCollections.observableList(bankQueue));
       clientsAttendedTable.setItems(FXCollections.observableList(bankQueue.getAttendedClients()));
@@ -26,32 +25,30 @@ public class MainController {
 
    //Añade un cliente a la cola y devuelve esta ultima
    private List<Client> AddClient() {
-      bankQueue.enqueueClient(new Client());
+      Client client = new Client();
+      bankQueue.enqueueClient(client);
       return bankQueue;
    }
 
    @FXML protected void onAttendButtonClick() {
-      try {
-         CompletableFuture<String> future;
-         future = CompletableFuture.supplyAsync(() -> bankQueue.attendClient(updateTables));
-         Notifications notificationBuilder = Notifications.create()
+      CompletableFuture.supplyAsync(() -> {
+         String result = bankQueue.attendClient();
+         updateTables.accept(bankQueue);
+         return result;
+      }).thenAccept((result) -> {
+         Notifications.create()
                .title("Resultado")
-               .text(future.get())
+               .text(result)
                .hideAfter(Duration.seconds(2))
-               .position(Pos.CENTER);
-         notificationBuilder.showInformation();
-      } catch (InterruptedException | ExecutionException e) {
-         e.printStackTrace();
-      }
+               .position(Pos.CENTER)
+               .darkStyle()
+               .showInformation();
+      });
    }
 
    @FXML public void onAddClientButtonClick() {
-      try {
-         CompletableFuture<List<Client>> future = CompletableFuture.supplyAsync(this::AddClient);
-         clientsWaitingTable.setItems(FXCollections.observableList(future.get()));
-      } catch (InterruptedException | ExecutionException e) {
-         e.printStackTrace();
-      }
+      CompletableFuture.supplyAsync(this::AddClient)
+            .thenAccept((list) -> clientsWaitingTable.setItems(FXCollections.observableList(list)));
    }
 
 }
