@@ -18,10 +18,10 @@ public class MainController {
    @FXML private TableView<Client> clientsWaitingTable;
    private final BankAttentionQueue bankQueue = new BankAttentionQueue();
 
-   private final Consumer<List<Client>> updateTables = (clients) -> {
+   private void updateTables(List<Client> clients) {
       clientsWaitingTable.setItems(FXCollections.observableList(bankQueue));
       clientsAttendedTable.setItems(FXCollections.observableList(bankQueue.getAttendedClients()));
-   };
+   }
 
    //Añade un cliente a la cola y devuelve esta ultima
    private List<Client> AddClient() {
@@ -33,17 +33,9 @@ public class MainController {
    @FXML protected void onAttendButtonClick() {
       CompletableFuture.supplyAsync(() -> {
          String result = bankQueue.attendClient();
-         updateTables.accept(bankQueue);
+         updateTables(bankQueue);
          return result;
-      }).thenAccept((result) -> {
-         Notifications.create()
-               .title("Resultado")
-               .text(result)
-               .hideAfter(Duration.seconds(2))
-               .position(Pos.CENTER)
-               .darkStyle()
-               .showInformation();
-      });
+      }).thenAccept((result) -> System.out.println(result));
    }
 
    @FXML public void onAddClientButtonClick() {
