@@ -27,11 +27,9 @@ public class MainController {
    }
 
    @FXML protected void onAttendButtonClick() {
-      CompletableFuture.supplyAsync(() -> {
-         String result = bankQueue.attendClient();
-         updateTables();
-         return result;
-      }).thenAccept(System.out::println);
+      CompletableFuture.supplyAsync(bankQueue::attendClient)
+            .thenAccept(System.out::println)
+            .thenRun(this::updateTables);
    }
 
    @FXML public void onAddClientButtonClick() {

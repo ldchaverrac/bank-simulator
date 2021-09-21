@@ -3,6 +3,7 @@ package com.panthers.bank.model;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class BankAttentionQueue extends LinkedList<Client> {
    private final static ATM atm = new ATM();
@@ -18,7 +19,7 @@ public class BankAttentionQueue extends LinkedList<Client> {
 
    public synchronized String attendClient() {
       Client client = this.poll();
-      String message = atm.attendClient(client);
+      String message = atm.attendClient(Objects.requireNonNull(client));
       if (client.doHaveTransactions()) enqueueClient(client);
       else attendedClients.add(client);
       return message;
