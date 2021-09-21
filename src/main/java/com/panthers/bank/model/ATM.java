@@ -3,7 +3,7 @@ package com.panthers.bank.model;
 public class ATM {
     public synchronized String attendClient(Client client) {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
