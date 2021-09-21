@@ -4,21 +4,17 @@ import com.panthers.bank.model.BankAttentionQueue;
 import com.panthers.bank.model.Client;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.TableView;
-import javafx.util.Duration;
-import org.controlsfx.control.Notifications;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public class MainController {
    @FXML private TableView<Client> clientsAttendedTable;
    @FXML private TableView<Client> clientsWaitingTable;
    private final BankAttentionQueue bankQueue = new BankAttentionQueue();
 
-   private void updateTables(List<Client> clients) {
+   private void updateTables() {
       clientsWaitingTable.setItems(FXCollections.observableList(bankQueue));
       clientsAttendedTable.setItems(FXCollections.observableList(bankQueue.getAttendedClients()));
    }
@@ -33,9 +29,9 @@ public class MainController {
    @FXML protected void onAttendButtonClick() {
       CompletableFuture.supplyAsync(() -> {
          String result = bankQueue.attendClient();
-         updateTables(bankQueue);
+         updateTables();
          return result;
-      }).thenAccept((result) -> System.out.println(result));
+      }).thenAccept(System.out::println);
    }
 
    @FXML public void onAddClientButtonClick() {
